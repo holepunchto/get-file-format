@@ -1,0 +1,21 @@
+{
+  "name": "get-file-format",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard",
+    "lint:fix": "standard --fix",
+    "test": "npm run lint && brittle-bare test/**/*.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "brittle": "^3.18.3",
+    "standard": "^17.1.2"
+  },
+  "dependencies": {
+    "b4a": "^1.6.7"
+  }
+}
