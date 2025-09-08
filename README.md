@@ -2,7 +2,7 @@
 
 **(WIP)**
 
-Detect the file format of a file by looking at the magic number of the buffer
+Detect the format of a file by looking at its magic number
 
 ## Install
 

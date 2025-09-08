@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "print": "bare scripts/print-format.js",
     "lint": "standard",
     "lint:fix": "standard --fix",
     "test": "npm run lint && brittle-bare test/**/*.test.js"
@@ -17,5 +18,10 @@
   },
   "dependencies": {
     "b4a": "^1.6.7"
+  },
+  "standard": {
+    "globals": [
+      "Bare"
+    ]
   }
 }

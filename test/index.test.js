@@ -4,7 +4,10 @@ const getFileFormat = require('..')
 
 test('all formats', t => {
   const formats = [
+    'avif',
+    'bmp',
     'heic',
+    'ico',
     'jpg',
     'png',
     'tiff',
@@ -16,6 +19,6 @@ test('all formats', t => {
 
     const result = getFileFormat(buffer)
 
-    t.is(result, format)
+    t.is(result, format, format)
   }
 })
