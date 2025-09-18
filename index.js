@@ -23,16 +23,19 @@ const ftyp = {
 }
 
 const types = {
-  bmp: [{ sequence: [0x42, 0x4D] }],
+  bmp: [{ sequence: [0x42, 0x4d] }],
   ico: [{ sequence: [0x00, 0x00, 0x01, 0x00] }],
-  jpg: [{ sequence: [0xFF, 0xD8, 0xFF] }],
+  jpg: [{ sequence: [0xff, 0xd8, 0xff] }],
   gif: [{ sequence: [0x47, 0x49, 0x46, 0x38] }],
-  png: [{ sequence: [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A] }],
-  tiff: [{ sequence: [0x4D, 0x4D, 0x00, 0x2A] }, { sequence: [0x49, 0x49, 0x2A, 0x00] }],
+  png: [{ sequence: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a] }],
+  tiff: [
+    { sequence: [0x4d, 0x4d, 0x00, 0x2a] },
+    { sequence: [0x49, 0x49, 0x2a, 0x00] }
+  ],
   webp: [{ sequence: [0x52, 0x49, 0x46, 0x46] }]
 }
 
-function startsWith (buffer, sequence, offset = 0) {
+function startsWith(buffer, sequence, offset = 0) {
   for (let i = 0; i < sequence.length; i++) {
     if (buffer[i + offset] !== sequence[i]) {
       return false
@@ -41,7 +44,7 @@ function startsWith (buffer, sequence, offset = 0) {
   return true
 }
 
-function lookup (types, buffer) {
+function lookup(types, buffer) {
   for (const type in types) {
     for (const { sequence, offset } of types[type]) {
       if (startsWith(buffer, sequence, offset)) {
@@ -52,7 +55,7 @@ function lookup (types, buffer) {
   return null
 }
 
-module.exports = function getFileFormat (bytes) {
+module.exports = function getFileFormat(bytes) {
   const buffer = b4a.from(bytes).subarray(0, 64)
 
   // ISOBMFF

@@ -5,23 +5,19 @@
   "main": "index.js",
   "scripts": {
     "print": "bare scripts/print-format.js",
-    "lint": "standard",
-    "lint:fix": "standard --fix",
-    "test": "npm run lint && brittle-bare test/**/*.test.js"
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "test": "npm run format && brittle-bare test/**/*.test.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "brittle": "^3.18.3",
-    "standard": "^17.1.2"
+    "prettier": "^3.6.2",
+    "prettier-config-holepunch": "^1.0.0"
   },
   "dependencies": {
     "b4a": "^1.6.7"
-  },
-  "standard": {
-    "globals": [
-      "Bare"
-    ]
   }
 }
