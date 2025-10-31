@@ -1,8 +1,9 @@
 # get-file-format
 
-**(WIP)**
-
 Detect the format of a file by looking at its magic number
+
+> [!IMPORTANT]
+> WIP: Check the tests for the current supported file types
 
 ## Install
 

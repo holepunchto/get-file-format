@@ -1,15 +1,24 @@
 const getFileFormat = require('..')
 
-const [filename] = Bare.argv.slice(2)
+function printHeader(bytes) {
+  const firstBytes = bytes.slice(0, 20)
+  let hex = ''
+  let text = ''
+  for (const byte of firstBytes) {
+    hex += byte + ' '
+    text += String.fromCharCode(byte) + ' '
+  }
+  console.log(hex)
+  console.log(text)
+}
 
-const bytes = require(filename, { with: { type: 'binary' } })
+function printFormat(bytes) {
+  const format = getFileFormat(bytes)
+  console.log()
+  console.log('Format:', format)
+}
 
-const format = getFileFormat(bytes)
-
-console.log()
-console.log('Format: ', format)
-
-if (bytes.subarray(4, 8).toString('latin1') === 'ftyp') {
+function printFTYP(bytes) {
   const size = bytes.subarray(0, 4).readUInt32BE()
   const majorBrand = bytes.subarray(8, 12).toString()
   const minorVersion = bytes.subarray(12, 16).readUInt32BE()
@@ -26,4 +35,18 @@ if (bytes.subarray(4, 8).toString('latin1') === 'ftyp') {
   console.log('Compatibles:', compatibles.join(', '))
 }
 
-console.log()
+const args = Bare.argv.slice(2)
+
+if (args.length < 1) {
+  console.log('> Missing file argument')
+  Bare.exit(1)
+}
+
+const filename = args[0]
+const bytes = require(filename, { with: { type: 'binary' } })
+
+printHeader(bytes)
+printFormat(bytes)
+if (bytes.subarray(4, 8).toString('latin1') === 'ftyp') {
+  printFTYP(bytes)
+}
