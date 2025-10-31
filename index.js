@@ -65,16 +65,12 @@ const types = {
 }
 
 function head(buffer, end = 64) {
-  let buff
-
   if (Buffer.isBuffer(buffer) || ArrayBuffer.isView(buffer)) {
-    buff = buffer.subarray(0, end)
+    return buffer.subarray(0, end)
   }
   if (buffer instanceof ArrayBuffer) {
-    buff = buffer.slice(0, end)
+    return b4a.from(buffer.slice(0, end))
   }
-
-  return b4a.from(buff)
 }
 
 function startsWith(buffer, sequence, offset = 0) {
