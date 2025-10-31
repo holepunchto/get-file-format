@@ -7,7 +7,7 @@
     "print": "bare scripts/print-format.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "npm run format && brittle-bare test/**/*.test.js"
+    "test": "npm run format:check && brittle-bare test/**/*.test.js"
   },
   "keywords": [],
   "author": "",

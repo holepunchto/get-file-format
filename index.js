@@ -64,6 +64,19 @@ const types = {
   webp: [{ sequence: [0x52, 0x49, 0x46, 0x46] }]
 }
 
+function head(buffer, end = 64) {
+  let buff
+
+  if (Buffer.isBuffer(buffer) || ArrayBuffer.isView(buffer)) {
+    buff = buffer.subarray(0, end)
+  }
+  if (buffer instanceof ArrayBuffer) {
+    buff = buffer.slice(0, end)
+  }
+
+  return b4a.from(buff)
+}
+
 function startsWith(buffer, sequence, offset = 0) {
   for (let i = 0; i < sequence.length; i++) {
     if (buffer[i + offset] !== sequence[i]) {
@@ -85,7 +98,7 @@ function lookup(types, buffer) {
 }
 
 module.exports = function getFileFormat(bytes) {
-  const buffer = b4a.from(bytes).subarray(0, 64)
+  const buffer = head(bytes)
 
   // ISOBMFF
   if (startsWith(buffer, ftyp.sequence, ftyp.offset)) {
