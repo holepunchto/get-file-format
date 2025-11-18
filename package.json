@@ -9,13 +9,16 @@
   "scripts": {
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "npm run format:check && brittle-bare test/**/*.test.js"
+    "lint": "lunte",
+    "test": "npm run test:check && brittle-bare test/**/*.test.js",
+    "test:check": "npm run lint && npm run format:check"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "brittle": "^3.18.3",
+    "lunte": "^1.3.0",
     "paparam": "^1.9.0",
     "prettier": "^3.6.2",
     "prettier-config-holepunch": "^1.0.0"

@@ -9,10 +9,13 @@ const cmd = command(
   header('gff (get-file-format)'),
   summary('Detect the format of a file by looking at its magic number 🪄'),
   arg('<path>', 'Path to the file'),
-  flag('--bytes|-n [numBytes]', `Number of bytes to print. Default ${NUM_BYTES_DEFAULT}`),
+  flag(
+    '--bytes|-n [numBytes]',
+    `Number of bytes to print. Default ${NUM_BYTES_DEFAULT}`
+  )
 )
 
-function log (...args) {
+function log(...args) {
   console.log(...args)
 }
 

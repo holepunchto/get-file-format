@@ -45,6 +45,7 @@ gff ./sample.jpg
 ```
 
 Options:
+
 ```sh
   <path>                  Path to file you want to inspect
   --bytes, -n <numBytes>  Number of bytes to print
