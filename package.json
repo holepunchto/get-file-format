@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "gff": "./cli.js"
+  },
   "scripts": {
-    "print": "bare scripts/print-format.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "npm run format:check && brittle-bare test/**/*.test.js"
@@ -14,10 +16,12 @@
   "license": "ISC",
   "devDependencies": {
     "brittle": "^3.18.3",
+    "paparam": "^1.9.0",
     "prettier": "^3.6.2",
     "prettier-config-holepunch": "^1.0.0"
   },
   "dependencies": {
-    "b4a": "^1.6.7"
+    "b4a": "^1.6.7",
+    "bare-path": "^3.0.0"
   }
 }
