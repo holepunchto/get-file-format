@@ -3,15 +3,20 @@ const { header, summary, command, arg, flag } = require('paparam')
 const path = require('bare-path')
 const getFileFormat = require('.')
 
-const NUM_BYTES_DEFAULT = 24
+const PRINT_BYTE_START_DEFAULT = 0
+const PRINT_BYTE_LENGTH_DEFAULT = 32
 
 const cmd = command(
   header('gff (get-file-format)'),
   summary('Detect the format of a file by looking at its magic number 🪄'),
   arg('<path>', 'Path to the file'),
   flag(
-    '--bytes|-n [numBytes]',
-    `Number of bytes to print. Default ${NUM_BYTES_DEFAULT}`
+    '--start|-s [byteStart]',
+    `Print bytes from this index. Default ${PRINT_BYTE_START_DEFAULT}`
+  ),
+  flag(
+    '--length|-n [byteLength]',
+    `Number of bytes to print. Default ${PRINT_BYTE_LENGTH_DEFAULT}`
   )
 )
 
@@ -19,23 +24,31 @@ function log(...args) {
   console.log(...args)
 }
 
-function printHeader(bytes, numBytes) {
-  if (numBytes === 0) return
-  const firstBytes = bytes.slice(0, numBytes)
+function isPrintable(byte) {
+  return byte >= 0x20 && byte <= 0x7e
+}
+
+function byteLine(hex, separator = '+') {
+  let line = ''
+  for (let i = 0; i < hex.length; i++) line += hex[i] === ' ' ? separator : '-'
+  return line
+}
+
+function printBytes(bytes, { start, length }) {
+  if (length === 0) return
+  const firstBytes = bytes.slice(start, start + length)
 
   let hex = ''
   let text = ''
   for (const byte of firstBytes) {
-    hex += byte + ' '
-    text += String.fromCharCode(byte) + ' '
+    hex += byte.toString(16).padStart(2, '0').toUpperCase() + ' '
+    text += isPrintable(byte) ? ' ' + String.fromCharCode(byte) + ' ' : '   '
   }
-  let line = ''
-  for (let i = 0; i < hex.length; i++) line += '-'
 
-  log('+', line)
-  log('|', hex)
-  log('|', text)
-  log('+', line)
+  log(byteLine(hex, '┬'))
+  log(hex)
+  log(text)
+  log(byteLine(hex, '┴'))
 }
 
 function printFormat(bytes) {
@@ -68,9 +81,10 @@ async function main({ args, flags }) {
     if (!args?.path) return
 
     const bytes = require(path.resolve(args.path), { with: { type: 'binary' } })
-    const numBytes = Number(flags.bytes || NUM_BYTES_DEFAULT)
+    const start = Number(flags.start || PRINT_BYTE_START_DEFAULT)
+    const length = Number(flags.length || PRINT_BYTE_LENGTH_DEFAULT)
 
-    printHeader(bytes, numBytes)
+    printBytes(bytes, { start, length })
     printFormat(bytes)
     if (bytes.subarray(4, 8).toString('latin1') === 'ftyp') {
       printFTYP(bytes)
