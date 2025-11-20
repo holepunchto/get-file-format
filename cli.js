@@ -40,15 +40,18 @@ function printBytes(bytes, { start, length }) {
 
   let hex = ''
   let text = ''
-  for (const byte of firstBytes) {
+  let indexes = ''
+  for (const [index, byte] of firstBytes.entries()) {
     hex += byte.toString(16).padStart(2, '0').toUpperCase() + ' '
     text += isPrintable(byte) ? ' ' + String.fromCharCode(byte) + ' ' : '   '
+    indexes += (start + index).toString().padStart(2, '0') + ' '
   }
 
   log(byteLine(hex, '┬'))
   log(hex)
   log(text)
   log(byteLine(hex, '┴'))
+  log(indexes)
 }
 
 function printFormat(bytes) {
