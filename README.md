@@ -47,7 +47,8 @@ gff ./sample.jpg
 Options:
 
 ```sh
-  <path>                  Path to file you want to inspect
-  --bytes, -n <numBytes>  Number of bytes to print
-  --help                  Print help
+  <path>                      Path to the file to inspect
+  --start, -s <byteStart>     Print bytes from this index
+  --length, -n <byteLength>   Number of bytes to print
+  --help                      Print help
 ```
