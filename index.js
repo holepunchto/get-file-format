@@ -128,7 +128,7 @@ function lookup(types, buffer) {
   return null
 }
 
-function isobmff (buffer) {
+function isobmff(buffer) {
   // check major brand
   const size = buffer.subarray(0, 4).readUInt32BE()
   const majorBrand = buffer.subarray(8, 12)
