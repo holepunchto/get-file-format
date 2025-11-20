@@ -14,11 +14,13 @@ test('all formats', (t) => {
     'ico',
     'jpg',
     'm4v',
+    'mkv',
     'mov',
     'mp4',
     'png',
     'tiff',
-    'webp'
+    'webp',
+    'webm'
   ]
 
   for (const format of formats) {

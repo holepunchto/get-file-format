@@ -51,11 +51,26 @@ const ftyp = {
   }
 }
 
+// matroska detection can be improved by looking at the bytes after [0x42, 0x82], a variable integer (VINT) which indicates the length of the doctype [matroska, webm]
+const matroska = {
+  mkv: [
+    {
+      search: [0x42, 0x82],
+      offset: 1,
+      sequence: [0x6d, 0x61, 0x74, 0x72, 0x6f, 0x73, 0x6b, 0x61]
+    }
+  ],
+  webm: [
+    { search: [0x42, 0x82], offset: 1, sequence: [0x77, 0x65, 0x62, 0x6d] }
+  ]
+}
+
 const types = {
   bmp: [{ sequence: [0x42, 0x4d] }],
   ico: [{ sequence: [0x00, 0x00, 0x01, 0x00] }],
   jpg: [{ sequence: [0xff, 0xd8, 0xff] }],
   gif: [{ sequence: [0x47, 0x49, 0x46, 0x38] }],
+  mkv: [{ sequence: [0x1a, 0x45, 0xdf, 0xa3] }],
   png: [{ sequence: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a] }],
   tiff: [
     { sequence: [0x4d, 0x4d, 0x00, 0x2a] },
@@ -64,7 +79,7 @@ const types = {
   webp: [{ sequence: [0x52, 0x49, 0x46, 0x46] }]
 }
 
-function head(buffer, end = 64) {
+function head(buffer, end = 4096) {
   if (Buffer.isBuffer(buffer) || ArrayBuffer.isView(buffer)) {
     return buffer.subarray(0, end)
   }
@@ -82,10 +97,32 @@ function startsWith(buffer, sequence, offset = 0) {
   return true
 }
 
+function endIndexOf(buffer, search) {
+  let last = []
+
+  for (let i = 0; i < buffer.length; i++) {
+    if (buffer[i] === search[last.length]) {
+      last.push(buffer[i])
+    } else {
+      last = []
+    }
+    if (last.length === search.length) {
+      return i + 1
+    }
+  }
+
+  return -1
+}
+
 function lookup(types, buffer) {
   for (const type in types) {
-    for (const { sequence, offset } of types[type]) {
-      if (startsWith(buffer, sequence, offset)) {
+    for (const { search, sequence, offset = 0 } of types[type]) {
+      let searchIndex = 0
+      if (search) {
+        searchIndex = endIndexOf(buffer, search)
+        if (searchIndex === -1) return null
+      }
+      if (startsWith(buffer, sequence, searchIndex + offset)) {
         return type
       }
     }
@@ -123,9 +160,10 @@ module.exports = function getFileFormat(bytes) {
   // Rest (fixed sequence)
   const type = lookup(types, buffer)
 
-  if (type) {
-    return type
+  if (type === 'mkv') {
+    const subformat = lookup(matroska, buffer)
+    return subformat || 'mkv'
   }
 
-  return null
+  return type || null
 }
