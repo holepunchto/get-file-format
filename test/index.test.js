@@ -6,6 +6,7 @@ test('all formats', (t) => {
   const formats = [
     '3g2',
     '3gp',
+    'avi',
     'avif',
     'bmp',
     'f4v',
@@ -19,6 +20,7 @@ test('all formats', (t) => {
     'mp4',
     'png',
     'tiff',
+    'wav',
     'webp',
     'webm'
   ]

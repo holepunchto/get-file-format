@@ -62,9 +62,18 @@ const matroska = {
   ]
 }
 
+const riff = {
+  avi: [{ sequence: [0x41, 0x56, 0x49, 0x20], offset: 8 }],
+  webp: [{ sequence: [0x57, 0x45, 0x42, 0x50], offset: 8 }],
+  wav: [{ sequence: [0x57, 0x41, 0x56, 0x45], offset: 8 }]
+}
+
 const signature = {
+  // containers
   ftyp: [{ sequence: [0x66, 0x74, 0x79, 0x70], offset: 4 }],
   matroska: [{ sequence: [0x1a, 0x45, 0xdf, 0xa3] }],
+  riff: [{ sequence: [0x52, 0x49, 0x46, 0x46] }],
+  // standalone formats
   bmp: [{ sequence: [0x42, 0x4d] }],
   ico: [{ sequence: [0x00, 0x00, 0x01, 0x00] }],
   jpg: [{ sequence: [0xff, 0xd8, 0xff] }],
@@ -73,8 +82,7 @@ const signature = {
   tiff: [
     { sequence: [0x4d, 0x4d, 0x00, 0x2a] },
     { sequence: [0x49, 0x49, 0x2a, 0x00] }
-  ],
-  webp: [{ sequence: [0x52, 0x49, 0x46, 0x46] }]
+  ]
 }
 
 function head(buffer, end = 4096) {
@@ -161,7 +169,11 @@ module.exports = function getFileFormat(bytes) {
   }
 
   if (format === 'matroska') {
-    return lookup(matroska, buffer) || 'mkv'
+    return lookup(matroska, buffer)
+  }
+
+  if (format === 'riff') {
+    return lookup(riff, buffer)
   }
 
   return format || null
