@@ -10,13 +10,14 @@ const cmd = command(
   header('gff (get-file-format)'),
   summary('Detect the format of a file by looking at its magic number 🪄'),
   arg('<path>', 'Path to the file'),
+  flag('--verbose|-v', 'Print bytes and other info'),
   flag(
     '--start|-s [byteStart]',
-    `Print bytes from this index. Default ${PRINT_BYTE_START_DEFAULT}`
+    `Start index of bytes to print in verbose mode. Default ${PRINT_BYTE_START_DEFAULT}`
   ),
   flag(
     '--length|-n [byteLength]',
-    `Number of bytes to print. Default ${PRINT_BYTE_LENGTH_DEFAULT}`
+    `Number of bytes to print in verbose mode. Default ${PRINT_BYTE_LENGTH_DEFAULT}`
   )
 )
 
@@ -54,9 +55,9 @@ function printBytes(bytes, { start, length }) {
   log(indexes)
 }
 
-function printFormat(bytes) {
+function printFormat(format) {
   log()
-  log('Format:', getFileFormat(bytes))
+  log('Format:', format)
 }
 
 function printFTYP(bytes) {
@@ -87,10 +88,16 @@ async function main({ args, flags }) {
     const start = Number(flags.start || PRINT_BYTE_START_DEFAULT)
     const length = Number(flags.length || PRINT_BYTE_LENGTH_DEFAULT)
 
-    printBytes(bytes, { start, length })
-    printFormat(bytes)
-    if (bytes.subarray(4, 8).toString('latin1') === 'ftyp') {
-      printFTYP(bytes)
+    const format = getFileFormat(bytes)
+
+    if (flags.verbose) {
+      printBytes(bytes, { start, length })
+      printFormat(format)
+      if (bytes.subarray(4, 8).toString('latin1') === 'ftyp') {
+        printFTYP(bytes)
+      }
+    } else {
+      log(format)
     }
   } catch (err) {
     console.error(err)

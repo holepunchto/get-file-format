@@ -48,7 +48,8 @@ Options:
 
 ```sh
   <path>                      Path to the file to inspect
-  --start, -s <byteStart>     Print bytes from this index
-  --length, -n <byteLength>   Number of bytes to print
+  --verbose, -v               Print bytes and other info
+  --start, -s <byteStart>     Start index of bytes to print in verbose mode
+  --length, -n <byteLength>   Number of bytes to print in verbose mode
   --help                      Print help
 ```
