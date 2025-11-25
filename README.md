@@ -53,3 +53,7 @@ Options:
   --length, -n <byteLength>   Number of bytes to print in verbose mode
   --help                      Print help
 ```
+
+## License
+
+Apache-2.0
