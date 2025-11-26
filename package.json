@@ -6,6 +6,10 @@
   "bin": {
     "gff": "./cli.js"
   },
+  "files": [
+    "index.js",
+    "cli.js"
+  ],
   "scripts": {
     "format": "prettier --write .",
     "format:check": "prettier --check .",
