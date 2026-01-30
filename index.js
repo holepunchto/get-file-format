@@ -185,7 +185,7 @@ module.exports = function getFileFormat(bytes) {
   }
 
   if (format === 'xml') {
-    if (b4a.includes(buffer, b4a.from('<svg'))) return 'svg'
+    if (isLikelySvg(buffer)) return 'svg'
     return 'xml'
   }
 
