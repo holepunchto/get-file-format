@@ -143,6 +143,27 @@ function lookup(types, buffer) {
   }
   return null
 }
+const TAG_SVG_OPEN = b4a.from('<svg')
+const TAG_SVG_CLOSE = b4a.from('</svg>')
+const TAG_BOUNDARIES = [
+  0x20, // space
+  0x3e, // >
+  0x0a, // \n
+  0x09, // \t
+  0x0d, // \r
+  0x2f // /  (for <tag/>)
+]
+
+function isLikelySvg(buffer) {
+  const openIndex = b4a.indexOf(buffer, TAG_SVG_OPEN)
+  if (openIndex === -1) return false
+
+  const nextByte = buffer[openIndex + 4]
+  if (nextByte && !TAG_BOUNDARIES.includes(nextByte)) return false
+
+  const closeIndex = b4a.lastIndexOf(buffer, TAG_SVG_CLOSE)
+  return closeIndex > openIndex
+}
 
 function isobmff(buffer) {
   // check major brand
@@ -187,10 +208,6 @@ module.exports = function getFileFormat(bytes) {
   if (format === 'xml') {
     if (isLikelySvg(buffer)) return 'svg'
     return 'xml'
-  }
-
-  if (format === null) {
-    if (b4a.includes(buffer, b4a.from('<svg'))) return 'svg'
   }
 
   return format || null
