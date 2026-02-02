@@ -145,13 +145,15 @@ function lookup(types, buffer) {
 }
 const TAG_SVG_OPEN = b4a.from('<svg')
 const TAG_SVG_CLOSE = b4a.from('</svg>')
+const CHAR_GT = 0x3e // >
+const CHAR_SLASH = 0x2f // /  (for <tag/>)
 const TAG_BOUNDARIES = [
   0x20, // space
-  0x3e, // >
+  CHAR_GT, // >
   0x0a, // \n
   0x09, // \t
   0x0d, // \r
-  0x2f // /  (for <tag/>)
+  CHAR_SLASH
 ]
 
 function isLikelySvg(buffer) {
@@ -161,8 +163,13 @@ function isLikelySvg(buffer) {
   const nextByte = buffer[openIndex + 4]
   if (nextByte && !TAG_BOUNDARIES.includes(nextByte)) return false
 
-  const closeIndex = b4a.lastIndexOf(buffer, TAG_SVG_CLOSE)
-  return closeIndex > openIndex
+  const tagEnd = b4a.indexOf(buffer, CHAR_GT, openIndex)
+  if (tagEnd === -1) return false
+
+  const isSelfClosing = buffer[tagEnd - 1] === CHAR_SLASH
+  const hasCloseTag = b4a.lastIndexOf(buffer, TAG_SVG_CLOSE) > openIndex
+
+  return isSelfClosing || hasCloseTag
 }
 
 function isobmff(buffer) {
