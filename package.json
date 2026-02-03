@@ -1,6 +1,6 @@
 {
   "name": "get-file-format",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Detect the format of a file by looking at its magic number",
   "main": "index.js",
   "bin": {
