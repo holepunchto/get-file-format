@@ -18,11 +18,14 @@ test('all formats', (t) => {
     'mkv',
     'mov',
     'mp4',
+    'pdf',
     'png',
+    'svg',
     'tiff',
     'wav',
+    'webm',
     'webp',
-    'webm'
+    'xml'
   ]
 
   for (const format of formats) {
@@ -58,4 +61,12 @@ test('undetected format returns null', (t) => {
   const result = getFileFormat(buffer)
 
   t.is(result, null)
+})
+
+test('svg without xml declaration', (t) => {
+  const buffer = require('./fixtures/plain.svg', {
+    with: { type: 'binary' }
+  })
+  const result = getFileFormat(buffer)
+  t.is(result, 'svg', 'svg without xml declaration')
 })

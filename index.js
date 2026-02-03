@@ -78,10 +78,18 @@ const signature = {
   ico: [{ sequence: [0x00, 0x00, 0x01, 0x00] }],
   jpg: [{ sequence: [0xff, 0xd8, 0xff] }],
   gif: [{ sequence: [0x47, 0x49, 0x46, 0x38] }],
+  pdf: [{ sequence: [0x25, 0x50, 0x44, 0x46, 0x2d] }],
   png: [{ sequence: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a] }],
+  svg: [{ sequence: [0x3c, 0x73, 0x76, 0x67] }],
   tiff: [
     { sequence: [0x4d, 0x4d, 0x00, 0x2a] },
     { sequence: [0x49, 0x49, 0x2a, 0x00] }
+  ],
+  xml: [
+    { sequence: [0x3c, 0x3f, 0x78, 0x6d, 0x6c] },
+    { sequence: [0xef, 0xbb, 0xbf, 0x3c, 0x3f, 0x78, 0x6d, 0x6c] },
+    { sequence: [0xfe, 0xff, 0x00, 0x3c, 0x00, 0x3f] },
+    { sequence: [0xff, 0xfe, 0x3c, 0x00, 0x3f, 0x00] }
   ]
 }
 
@@ -135,6 +143,34 @@ function lookup(types, buffer) {
   }
   return null
 }
+const TAG_SVG_OPEN = b4a.from('<svg')
+const TAG_SVG_CLOSE = b4a.from('</svg>')
+const CHAR_GT = 0x3e // >
+const CHAR_SLASH = 0x2f // /  (for <tag/>)
+const TAG_BOUNDARIES = [
+  0x20, // space
+  CHAR_GT, // >
+  0x0a, // \n
+  0x09, // \t
+  0x0d, // \r
+  CHAR_SLASH
+]
+
+function isLikelySvg(buffer) {
+  const openIndex = b4a.indexOf(buffer, TAG_SVG_OPEN)
+  if (openIndex === -1) return false
+
+  const nextByte = buffer[openIndex + 4]
+  if (nextByte && !TAG_BOUNDARIES.includes(nextByte)) return false
+
+  const tagEnd = b4a.indexOf(buffer, CHAR_GT, openIndex)
+  if (tagEnd === -1) return false
+
+  const isSelfClosing = buffer[tagEnd - 1] === CHAR_SLASH
+  const hasCloseTag = b4a.lastIndexOf(buffer, TAG_SVG_CLOSE) > openIndex
+
+  return isSelfClosing || hasCloseTag
+}
 
 function isobmff(buffer) {
   // check major brand
@@ -174,6 +210,11 @@ module.exports = function getFileFormat(bytes) {
 
   if (format === 'riff') {
     return lookup(riff, buffer)
+  }
+
+  if (format === 'xml') {
+    if (isLikelySvg(buffer)) return 'svg'
+    return 'xml'
   }
 
   return format || null
