@@ -144,7 +144,6 @@ function lookup(types, buffer) {
   return null
 }
 const TAG_SVG_OPEN = b4a.from('<svg')
-const TAG_SVG_CLOSE = b4a.from('</svg>')
 const CHAR_GT = 0x3e // >
 const CHAR_SLASH = 0x2f // /  (for <tag/>)
 const TAG_BOUNDARIES = [
@@ -156,6 +155,10 @@ const TAG_BOUNDARIES = [
   CHAR_SLASH
 ]
 
+const SVG_NAMESPACE = b4a.from('http://www.w3.org/2000/svg')
+const SVG_VIEWBOX = b4a.from('viewBox')
+const SVG_XMLNS = b4a.from('xmlns')
+
 function isLikelySvg(buffer) {
   const openIndex = b4a.indexOf(buffer, TAG_SVG_OPEN)
   if (openIndex === -1) return false
@@ -166,10 +169,13 @@ function isLikelySvg(buffer) {
   const tagEnd = b4a.indexOf(buffer, CHAR_GT, openIndex)
   if (tagEnd === -1) return false
 
-  const isSelfClosing = buffer[tagEnd - 1] === CHAR_SLASH
-  const hasCloseTag = b4a.lastIndexOf(buffer, TAG_SVG_CLOSE) > openIndex
+  const tag = buffer.subarray(openIndex, tagEnd + 1)
 
-  return isSelfClosing || hasCloseTag
+  if (b4a.indexOf(tag, SVG_NAMESPACE) !== -1) return true
+  if (b4a.indexOf(tag, SVG_VIEWBOX) !== -1) return true
+  if (b4a.indexOf(tag, SVG_XMLNS) !== -1) return true
+
+  return buffer[tagEnd - 1] === CHAR_SLASH
 }
 
 function isobmff(buffer) {
