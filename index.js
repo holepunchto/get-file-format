@@ -144,7 +144,6 @@ function lookup(types, buffer) {
   return null
 }
 const TAG_SVG_OPEN = b4a.from('<svg')
-const TAG_SVG_CLOSE = b4a.from('</svg>')
 const CHAR_GT = 0x3e // >
 const CHAR_SLASH = 0x2f // /  (for <tag/>)
 const TAG_BOUNDARIES = [
@@ -166,10 +165,7 @@ function isLikelySvg(buffer) {
   const tagEnd = b4a.indexOf(buffer, CHAR_GT, openIndex)
   if (tagEnd === -1) return false
 
-  const isSelfClosing = buffer[tagEnd - 1] === CHAR_SLASH
-  const hasCloseTag = b4a.lastIndexOf(buffer, TAG_SVG_CLOSE) > openIndex
-
-  return isSelfClosing || hasCloseTag
+  return true
 }
 
 function isobmff(buffer) {
@@ -213,7 +209,7 @@ module.exports = function getFileFormat(bytes) {
   }
 
   if (format === 'xml') {
-    if (isLikelySvg(buffer)) return 'svg'
+    if (isLikelySvg(bytes)) return 'svg'
     return 'xml'
   }
 
