@@ -155,10 +155,6 @@ const TAG_BOUNDARIES = [
   CHAR_SLASH
 ]
 
-const SVG_NAMESPACE = b4a.from('http://www.w3.org/2000/svg')
-const SVG_VIEWBOX = b4a.from('viewBox')
-const SVG_XMLNS = b4a.from('xmlns')
-
 function isLikelySvg(buffer) {
   const openIndex = b4a.indexOf(buffer, TAG_SVG_OPEN)
   if (openIndex === -1) return false
@@ -169,13 +165,7 @@ function isLikelySvg(buffer) {
   const tagEnd = b4a.indexOf(buffer, CHAR_GT, openIndex)
   if (tagEnd === -1) return false
 
-  const tag = buffer.subarray(openIndex, tagEnd + 1)
-
-  if (b4a.indexOf(tag, SVG_NAMESPACE) !== -1) return true
-  if (b4a.indexOf(tag, SVG_VIEWBOX) !== -1) return true
-  if (b4a.indexOf(tag, SVG_XMLNS) !== -1) return true
-
-  return buffer[tagEnd - 1] === CHAR_SLASH
+  return true
 }
 
 function isobmff(buffer) {
@@ -219,7 +209,7 @@ module.exports = function getFileFormat(bytes) {
   }
 
   if (format === 'xml') {
-    if (isLikelySvg(buffer)) return 'svg'
+    if (isLikelySvg(bytes)) return 'svg'
     return 'xml'
   }
 
