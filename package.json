@@ -11,11 +11,9 @@
     "cli.js"
   ],
   "scripts": {
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "lint": "lunte",
-    "test": "npm run test:check && brittle-bare test/**/*.test.js",
-    "test:check": "npm run lint && npm run format:check"
+    "format": "prettier --write . && lunte --fix",
+    "lint": "prettier --check . && lunte",
+    "test": "brittle-bare test/index.test.js"
   },
   "keywords": [],
   "author": "Holepunch",
