@@ -11,16 +11,6 @@
     "cli.js",
     "lib"
   ],
-  "imports": {
-    "fs": {
-      "bare": "bare-fs",
-      "default": "fs"
-    },
-    "path": {
-      "bare": "bare-path",
-      "default": "path"
-    }
-  },
   "scripts": {
     "format": "prettier --write . && lunte --fix",
     "lint": "prettier --check . && lunte",

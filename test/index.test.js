@@ -1,5 +1,5 @@
 const test = require('brittle')
-const fs = require('fs')
+const fs = require('bare-fs')
 
 const getFileFormat = require('..')
 const { makeMP4 } = require('./helpers')

@@ -1,5 +1,5 @@
 const b4a = require('b4a')
-const fs = require('fs')
+const fs = require('bare-fs')
 const isobmff = require('./lib/isobmff')
 const matroska = require('./lib/matroska')
 const riff = require('./lib/riff')

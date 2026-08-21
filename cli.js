@@ -1,7 +1,7 @@
-#!/usr/bin/env node
+#!/usr/bin/env bare
 const { header, summary, command, arg, flag } = require('paparam')
-const fs = require('fs')
-const path = require('path')
+const fs = require('bare-fs')
+const path = require('bare-path')
 const getFileFormat = require('.')
 
 const HEAD_SIZE = 4096
