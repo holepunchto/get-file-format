@@ -49,6 +49,7 @@ Options:
 ```sh
   <path>                      Path to the file to inspect
   --verbose, -v               Print bytes and other info
+  --inspect-tracks, -i        Inspect tracks in media files to distinguish audio-only files
   --start, -s <byteStart>     Start index of bytes to print in verbose mode
   --length, -n <byteLength>   Number of bytes to print in verbose mode
   --help                      Print help

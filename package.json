@@ -8,8 +8,19 @@
   },
   "files": [
     "index.js",
-    "cli.js"
+    "cli.js",
+    "lib"
   ],
+  "imports": {
+    "fs": {
+      "bare": "bare-fs",
+      "default": "fs"
+    },
+    "path": {
+      "bare": "bare-path",
+      "default": "path"
+    }
+  },
   "scripts": {
     "format": "prettier --write . && lunte --fix",
     "lint": "prettier --check . && lunte",
@@ -30,6 +41,7 @@
   },
   "dependencies": {
     "b4a": "^1.6.7",
+    "bare-fs": "^4.7.4",
     "bare-path": "^3.0.0",
     "paparam": "^1.9.1"
   }
