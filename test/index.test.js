@@ -2,7 +2,7 @@ const test = require('brittle')
 const fs = require('fs')
 
 const getFileFormat = require('..')
-const { makeMP4, reader } = require('./helpers')
+const { makeMP4 } = require('./helpers')
 
 test('all formats', (t) => {
   const formats = [
@@ -118,57 +118,6 @@ test('fromPath: optionally inspects tracks', async (t) => {
   } finally {
     fs.unlinkSync(filepath)
   }
-})
-
-test('fromFileDescriptor: optionally inspects tracks', async (t) => {
-  const filepath = `/tmp/get-file-format-${Date.now()}-${Math.random()
-    .toString(16)
-    .slice(2)}.mp4`
-  const buffer = makeMP4({ tracks: ['soun'], mdatSize: 1024 * 1024 })
-
-  fs.writeFileSync(filepath, buffer)
-
-  const fd = fs.openSync(filepath, 'r')
-  try {
-    const format = await getFileFormat.fromFileDescriptor(fd)
-    const inspectedFormat = await getFileFormat.fromFileDescriptor(fd, {
-      inspectTracks: true
-    })
-
-    t.is(format, 'mp4')
-    t.is(inspectedFormat, 'm4a')
-  } finally {
-    fs.closeSync(fd)
-    fs.unlinkSync(filepath)
-  }
-})
-
-test('fromRandomAccessReader: optionally inspects tracks', async (t) => {
-  const buffer = makeMP4({ tracks: ['soun'], mdatSize: 1024 * 1024 })
-  const headOnlyFile = reader(buffer)
-  const inspectedFile = reader(buffer)
-
-  const format = await getFileFormat.fromRandomAccessReader(headOnlyFile)
-  const inspectedFormat = await getFileFormat.fromRandomAccessReader(
-    inspectedFile,
-    { inspectTracks: true }
-  )
-
-  t.is(format, 'mp4')
-  t.is(headOnlyFile.bytesRead, 4096, 'reads only the head by default')
-  t.is(inspectedFormat, 'm4a')
-  t.ok(inspectedFile.bytesRead < 5000, 'skips mdat without reading payload')
-})
-
-test('fromRandomAccessReader: video iso bmff returns mp4', async (t) => {
-  const video = makeMP4({ tracks: ['vide'] })
-  const file = reader(video)
-
-  const result = await getFileFormat.fromRandomAccessReader(file, {
-    inspectTracks: true
-  })
-
-  t.is(result, 'mp4')
 })
 
 test('accepts Uint8Array', (t) => {

@@ -144,8 +144,6 @@ async function fromPath(filepath, opts = {}) {
   }
 }
 
-getFileFormat.fromRandomAccessReader = fromRandomAccessReader
-getFileFormat.fromFileDescriptor = fromFileDescriptor
 getFileFormat.fromPath = fromPath
 
 module.exports = getFileFormat

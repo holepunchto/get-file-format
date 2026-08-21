@@ -29,7 +29,7 @@ const format = await getFileFormat.fromPath('./sample.mp4')
 // mp4
 ```
 
-By default, only the file header is inspected. To inspect media files and distinguish audio-only files:
+Inspect beyond the header for media to distinguish audio-only files:
 
 ```js
 const format = await getFileFormat.fromPath('./sample.mp4', {
@@ -49,15 +49,6 @@ const buffer = require('./sample.png', { with: { type: 'binary' } })
 const mimetype = getMimeType(getFileFormat(buffer))
 // image/png
 ```
-
-### API reference
-
-| API                                                  | Description                         |
-| ---------------------------------------------------- | ----------------------------------- |
-| `getFileFormat(buffer, opts)`                        | Detect from a buffer                |
-| `getFileFormat.fromPath(path, opts)`                 | Detect from a file path             |
-| `getFileFormat.fromFileDescriptor(fd, opts)`         | Detect from an open file descriptor |
-| `getFileFormat.fromRandomAccessReader(reader, opts)` | Detect from a random-access source  |
 
 ### CLI
 

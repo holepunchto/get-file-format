@@ -42,24 +42,6 @@ function makeMP4({
   return Buffer.concat(boxes)
 }
 
-function reader(buffer) {
-  return {
-    bytesRead: 0,
-    async size() {
-      return buffer.length
-    },
-    async read(offset, length) {
-      const chunk = buffer.subarray(
-        offset,
-        Math.min(offset + length, buffer.length)
-      )
-      this.bytesRead += chunk.length
-      return chunk
-    }
-  }
-}
-
 module.exports = {
-  makeMP4,
-  reader
+  makeMP4
 }
