@@ -1,9 +1,9 @@
-const b4a = require('b4a')
 const fs = require('bare-fs')
 const isobmff = require('./lib/isobmff')
 const matroska = require('./lib/matroska')
 const riff = require('./lib/riff')
 const xml = require('./lib/xml')
+const { toBuffer, lookup, readAt } = require('./lib/util')
 
 const HEAD_SIZE = 4096
 
@@ -34,36 +34,6 @@ const signature = {
 
 function head(buffer, end = HEAD_SIZE) {
   return toBuffer(buffer).subarray(0, end)
-}
-
-function toBuffer(buffer) {
-  if (ArrayBuffer.isView(buffer)) return b4a.toBuffer(buffer)
-  if (buffer instanceof ArrayBuffer) return b4a.from(buffer)
-}
-
-function startsWith(buffer, sequence, offset = 0) {
-  for (let i = 0; i < sequence.length; i++) {
-    if (buffer[i + offset] !== sequence[i]) {
-      return false
-    }
-  }
-  return true
-}
-
-async function readAt(reader, offset, length) {
-  const buffer = await reader.read(offset, length)
-  return toBuffer(buffer)
-}
-
-function lookup(types, buffer) {
-  for (const type in types) {
-    for (const { sequence, offset = 0 } of types[type]) {
-      if (startsWith(buffer, sequence, offset)) {
-        return type
-      }
-    }
-  }
-  return null
 }
 
 function getFileFormat(bytes, opts = {}) {
