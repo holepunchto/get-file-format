@@ -110,7 +110,7 @@ async function main({ args, flags }) {
       flags.verbose || !inspectTracks ? readHead(fs, filepath) : null
 
     const format = inspectTracks
-      ? await getFileFormat.fromPath(filepath)
+      ? await getFileFormat.fromPath(filepath, { inspectTracks: true })
       : getFileFormat(bytes)
 
     if (flags.verbose) {

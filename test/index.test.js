@@ -99,7 +99,7 @@ test('inspectTracks: video iso bmff returns mp4', (t) => {
   t.is(getFileFormat(mixed, { inspectTracks: true }), 'mp4')
 })
 
-test('fromPath: audio-only iso bmff returns m4a', async (t) => {
+test('fromPath: optionally inspects tracks', async (t) => {
   const filepath = `/tmp/get-file-format-${Date.now()}-${Math.random()
     .toString(16)
     .slice(2)}.mp4`
@@ -108,15 +108,19 @@ test('fromPath: audio-only iso bmff returns m4a', async (t) => {
   fs.writeFileSync(filepath, buffer)
 
   try {
-    const result = await getFileFormat.fromPath(filepath)
+    const format = await getFileFormat.fromPath(filepath)
+    const inspectedFormat = await getFileFormat.fromPath(filepath, {
+      inspectTracks: true
+    })
 
-    t.is(result, 'm4a')
+    t.is(format, 'mp4')
+    t.is(inspectedFormat, 'm4a')
   } finally {
     fs.unlinkSync(filepath)
   }
 })
 
-test('fromFileDescriptor: audio-only iso bmff returns m4a', async (t) => {
+test('fromFileDescriptor: optionally inspects tracks', async (t) => {
   const filepath = `/tmp/get-file-format-${Date.now()}-${Math.random()
     .toString(16)
     .slice(2)}.mp4`
@@ -126,30 +130,43 @@ test('fromFileDescriptor: audio-only iso bmff returns m4a', async (t) => {
 
   const fd = fs.openSync(filepath, 'r')
   try {
-    const result = await getFileFormat.fromFileDescriptor(fd)
+    const format = await getFileFormat.fromFileDescriptor(fd)
+    const inspectedFormat = await getFileFormat.fromFileDescriptor(fd, {
+      inspectTracks: true
+    })
 
-    t.is(result, 'm4a')
+    t.is(format, 'mp4')
+    t.is(inspectedFormat, 'm4a')
   } finally {
     fs.closeSync(fd)
     fs.unlinkSync(filepath)
   }
 })
 
-test('fromRandomAccessReader: audio-only iso bmff returns m4a', async (t) => {
+test('fromRandomAccessReader: optionally inspects tracks', async (t) => {
   const buffer = makeMP4({ tracks: ['soun'], mdatSize: 1024 * 1024 })
-  const file = reader(buffer)
+  const headOnlyFile = reader(buffer)
+  const inspectedFile = reader(buffer)
 
-  const result = await getFileFormat.fromRandomAccessReader(file)
+  const format = await getFileFormat.fromRandomAccessReader(headOnlyFile)
+  const inspectedFormat = await getFileFormat.fromRandomAccessReader(
+    inspectedFile,
+    { inspectTracks: true }
+  )
 
-  t.is(result, 'm4a')
-  t.ok(file.bytesRead < 5000, 'skips mdat without reading payload')
+  t.is(format, 'mp4')
+  t.is(headOnlyFile.bytesRead, 4096, 'reads only the head by default')
+  t.is(inspectedFormat, 'm4a')
+  t.ok(inspectedFile.bytesRead < 5000, 'skips mdat without reading payload')
 })
 
 test('fromRandomAccessReader: video iso bmff returns mp4', async (t) => {
   const video = makeMP4({ tracks: ['vide'] })
   const file = reader(video)
 
-  const result = await getFileFormat.fromRandomAccessReader(file)
+  const result = await getFileFormat.fromRandomAccessReader(file, {
+    inspectTracks: true
+  })
 
   t.is(result, 'mp4')
 })

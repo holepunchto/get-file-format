@@ -99,13 +99,13 @@ function getFileFormat(bytes, opts = {}) {
   return format || null
 }
 
-async function fromRandomAccessReader(reader) {
+async function fromRandomAccessReader(reader, opts = {}) {
   const size = await reader.size()
   const buffer = await readAt(reader, 0, Math.min(HEAD_SIZE, size))
   const format = lookup(signature, buffer)
 
   if (format === 'ftyp') {
-    return isobmff.detectAt(buffer, reader, size)
+    return isobmff.detectAt(buffer, reader, size, opts)
   }
 
   if (format === 'matroska') {
@@ -123,24 +123,27 @@ async function fromRandomAccessReader(reader) {
   return format || null
 }
 
-function fromFileDescriptor(fd) {
-  return fromRandomAccessReader({
-    async size() {
-      return fs.fstatSync(fd).size
+function fromFileDescriptor(fd, opts = {}) {
+  return fromRandomAccessReader(
+    {
+      async size() {
+        return fs.fstatSync(fd).size
+      },
+      async read(offset, length) {
+        const buffer = Buffer.allocUnsafe(length)
+        const bytesRead = fs.readSync(fd, buffer, 0, length, offset)
+        return buffer.subarray(0, bytesRead)
+      }
     },
-    async read(offset, length) {
-      const buffer = Buffer.allocUnsafe(length)
-      const bytesRead = fs.readSync(fd, buffer, 0, length, offset)
-      return buffer.subarray(0, bytesRead)
-    }
-  })
+    opts
+  )
 }
 
-async function fromPath(filepath) {
+async function fromPath(filepath, opts = {}) {
   const fd = fs.openSync(filepath, 'r')
 
   try {
-    return await fromFileDescriptor(fd)
+    return await fromFileDescriptor(fd, opts)
   } finally {
     fs.closeSync(fd)
   }
