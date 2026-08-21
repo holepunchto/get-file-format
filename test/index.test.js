@@ -170,3 +170,12 @@ test('fromRandomAccessReader: video iso bmff returns mp4', async (t) => {
 
   t.is(result, 'mp4')
 })
+
+test('accepts Uint8Array', (t) => {
+  const bytes = new Uint8Array(makeMP4())
+  const padded = new Uint8Array(bytes.length + 8)
+  padded.set(bytes, 8)
+
+  t.is(getFileFormat(bytes), 'mp4', 'direct input')
+  t.is(getFileFormat(padded.subarray(8)), 'mp4', 'non-zero byte offset')
+})

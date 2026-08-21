@@ -33,16 +33,11 @@ const signature = {
 }
 
 function head(buffer, end = HEAD_SIZE) {
-  if (Buffer.isBuffer(buffer) || ArrayBuffer.isView(buffer)) {
-    return buffer.subarray(0, end)
-  }
-  if (buffer instanceof ArrayBuffer) {
-    return b4a.from(buffer.slice(0, end))
-  }
+  return toBuffer(buffer).subarray(0, end)
 }
 
 function toBuffer(buffer) {
-  if (Buffer.isBuffer(buffer) || ArrayBuffer.isView(buffer)) return buffer
+  if (ArrayBuffer.isView(buffer)) return b4a.toBuffer(buffer)
   if (buffer instanceof ArrayBuffer) return b4a.from(buffer)
 }
 
@@ -72,15 +67,15 @@ function lookup(types, buffer) {
 }
 
 function getFileFormat(bytes, opts = {}) {
-  const buffer = head(bytes)
-  const fullBuffer = opts.inspectTracks ? toBuffer(bytes) : null
+  const fullBuffer = toBuffer(bytes)
+  const buffer = head(fullBuffer)
 
   const format = lookup(signature, buffer)
 
   if (format === 'ftyp') {
     return isobmff.detect(buffer, {
       inspectTracks: opts.inspectTracks,
-      buffer: fullBuffer
+      buffer: opts.inspectTracks ? fullBuffer : null
     })
   }
 
@@ -93,7 +88,7 @@ function getFileFormat(bytes, opts = {}) {
   }
 
   if (format === 'xml' || format === 'svg') {
-    return xml.detect(format, bytes)
+    return xml.detect(format, fullBuffer)
   }
 
   return format || null
