@@ -86,7 +86,7 @@ function printFTYP(bytes) {
   log('Compatibles:', compatibles.join(', '))
 }
 
-function readHead(fs, filepath) {
+function readHead(filepath) {
   const fd = fs.openSync(filepath, 'r')
 
   try {
@@ -107,7 +107,7 @@ async function main({ args, flags }) {
     const start = Number(flags.start || PRINT_BYTE_START_DEFAULT)
     const length = Number(flags.length || PRINT_BYTE_LENGTH_DEFAULT)
     const bytes =
-      flags.verbose || !inspectTracks ? readHead(fs, filepath) : null
+      flags.verbose || !inspectTracks ? readHead(filepath) : null
 
     const format = inspectTracks
       ? await getFileFormat.fromPath(filepath, { inspectTracks: true })
