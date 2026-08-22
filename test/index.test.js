@@ -84,21 +84,6 @@ test('svg larger than head buffer', (t) => {
   t.is(result, 'svg', 'svg with closing tag past 4KB head window')
 })
 
-test('inspectTracks: audio-only iso bmff returns m4a', (t) => {
-  const buffer = makeMP4({ tracks: ['soun'] })
-
-  t.is(getFileFormat(buffer), 'mp4')
-  t.is(getFileFormat(buffer, { inspectTracks: true }), 'm4a')
-})
-
-test('inspectTracks: video iso bmff returns mp4', (t) => {
-  const video = makeMP4({ tracks: ['vide'] })
-  const mixed = makeMP4({ tracks: ['soun', 'vide'] })
-
-  t.is(getFileFormat(video, { inspectTracks: true }), 'mp4')
-  t.is(getFileFormat(mixed, { inspectTracks: true }), 'mp4')
-})
-
 test('fromPath: optionally inspects tracks', async (t) => {
   const filepath = `/tmp/get-file-format-${Date.now()}-${Math.random()
     .toString(16)

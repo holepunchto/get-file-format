@@ -36,17 +36,14 @@ function head(buffer, end = HEAD_SIZE) {
   return toBuffer(buffer).subarray(0, end)
 }
 
-function getFileFormat(bytes, opts = {}) {
+function getFileFormat(bytes) {
   const fullBuffer = toBuffer(bytes)
   const buffer = head(fullBuffer)
 
   const format = lookup(signature, buffer)
 
   if (format === 'ftyp') {
-    return isobmff.detect(buffer, {
-      inspectTracks: opts.inspectTracks,
-      buffer: opts.inspectTracks ? fullBuffer : null
-    })
+    return isobmff.detect(buffer)
   }
 
   if (format === 'matroska') {
