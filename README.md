@@ -29,14 +29,16 @@ const format = await getFileFormat.fromPath('./sample.mp4')
 // mp4
 ```
 
-Inspect beyond the header to distinguish audio-only MP4 (`m4a`) or Matroska (`mka`) files:
+Inspect beyond the header to return a more specific format:
 
 ```js
 const format = await getFileFormat.fromPath('./sample.mp4', {
-  inspectTracks: true
+  inspect: true
 })
 // mp4 or m4a
 ```
+
+> Inspection currently supports: MP4, Matroska.
 
 It can be used in combination with [get-mime-type](https://github.com/holepunchto/get-mime-type):
 
@@ -65,7 +67,7 @@ Options:
 ```sh
   <path>                      Path to the file to inspect
   --verbose, -v               Print bytes and other info
-  --inspect-tracks, -i        Inspect tracks in media files to distinguish audio-only files
+  --inspect, -i               Inspect beyond the header for a more specific format
   --start, -s <byteStart>     Start index of bytes to print in verbose mode
   --length, -n <byteLength>   Number of bytes to print in verbose mode
   --help                      Print help

@@ -13,10 +13,7 @@ const cmd = command(
   summary('Detect the format of a file by looking at its magic number 🪄'),
   arg('<path>', 'Path to the file'),
   flag('--verbose|-v', 'Print bytes and other info'),
-  flag(
-    '--inspect-tracks|-i',
-    'Inspect tracks in media files to distinguish audio-only files'
-  ),
+  flag('--inspect|-i', 'Inspect beyond the header for a more specific format'),
   flag(
     '--start|-s [byteStart]',
     `Start index of bytes to print in verbose mode. Default ${PRINT_BYTE_START_DEFAULT}`
@@ -103,14 +100,13 @@ async function main({ args, flags }) {
     if (!args?.path) return
 
     const filepath = path.resolve(args.path)
-    const inspectTracks = flags.inspectTracks
+    const inspect = flags.inspect
     const start = Number(flags.start || PRINT_BYTE_START_DEFAULT)
     const length = Number(flags.length || PRINT_BYTE_LENGTH_DEFAULT)
-    const bytes =
-      flags.verbose || !inspectTracks ? readHead(filepath) : null
+    const bytes = flags.verbose || !inspect ? readHead(filepath) : null
 
-    const format = inspectTracks
-      ? await getFileFormat.fromPath(filepath, { inspectTracks: true })
+    const format = inspect
+      ? await getFileFormat.fromPath(filepath, { inspect: true })
       : getFileFormat(bytes)
 
     if (flags.verbose) {

@@ -96,7 +96,7 @@ test('fromPath: optionally inspects ISOBMFF tracks', async (t) => {
   try {
     const format = await getFileFormat.fromPath(filepath)
     const inspectedFormat = await getFileFormat.fromPath(filepath, {
-      inspectTracks: true
+      inspect: true
     })
 
     t.is(format, 'mp4')
@@ -148,7 +148,7 @@ test('fromPath: optionally inspects Matroska tracks', async (t) => {
     try {
       const format = await getFileFormat.fromPath(filepath)
       const inspectedFormat = await getFileFormat.fromPath(filepath, {
-        inspectTracks: true
+        inspect: true
       })
 
       t.is(format, baseFormat)
