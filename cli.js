@@ -75,6 +75,11 @@ function printFTYP(bytes) {
   log('Major brand:', majorBrand)
   log('Minor version:', minorVersion)
 
+  if (size < 16 || size > bytes.length || (size - 16) % 4 !== 0) {
+    log('Compatibles: unavailable')
+    return
+  }
+
   const compatibles = []
   for (let i = 16; i < size; i += 4) {
     compatibles.push(bytes.subarray(i, i + 4).toString('latin1'))
