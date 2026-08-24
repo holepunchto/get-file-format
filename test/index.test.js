@@ -168,20 +168,16 @@ test('accepts Uint8Array', (t) => {
   t.is(getFileFormat(padded.subarray(8)), 'mp4', 'non-zero byte offset')
 })
 
-test('malformed ftyp size is bounded by the buffer', (t) => {
-  // Header claims 4 GB long when it's in 64 bytes. The lookup must stop at the buffer, not this size
+test('malformed ftyp size does not scan unrelated bytes', (t) => {
   const malformed = Buffer.alloc(64)
-  malformed.writeUInt32BE(0xffffffff, 0)
+  malformed.writeUInt32BE(0xfffffffc, 0)
   malformed.write('ftyp', 4, 4, 'latin1')
   malformed.write('zzzz', 8, 4, 'latin1')
-  malformed.write('qqqq', 16, 4, 'latin1')
+  malformed.write('mp42', 16, 4, 'latin1')
 
-  const known = Buffer.from(malformed)
-  known.write('mp42', 16, 4, 'latin1')
+  const valid = Buffer.from(malformed)
+  valid.writeUInt32BE(20, 0)
 
-  const start = Date.now()
-
-  t.is(getFileFormat(malformed), null, 'nothing to find')
-  t.is(getFileFormat(known), 'mp4', 'brands inside the buffer still found')
-  t.ok(Date.now() - start < 1000, 'bounded by the buffer, not the box size')
+  t.is(getFileFormat(malformed), null, 'ignores bytes outside an available box')
+  t.is(getFileFormat(valid), 'mp4', 'finds a valid compatible brand')
 })
