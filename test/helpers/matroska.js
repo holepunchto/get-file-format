@@ -17,9 +17,13 @@ function element(id, ...contents) {
   return Buffer.concat([Buffer.from(id), vint(content.length), content])
 }
 
-function makeFile(docType, { tracks = [], paddingSize = 0 } = {}) {
+function makeFile(
+  docType,
+  { tracks = [], paddingSize = 0, headerPadding = null } = {}
+) {
   const header = element(
     [0x1a, 0x45, 0xdf, 0xa3],
+    headerPadding ? element([0xec], headerPadding) : Buffer.alloc(0),
     element([0x42, 0x82], Buffer.from(docType))
   )
   const entries = tracks.map((type) =>

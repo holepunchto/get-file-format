@@ -67,6 +67,18 @@ test('undetected format returns null', (t) => {
   t.is(result, null)
 })
 
+test('matroska detection checks every DocType occurrence', (t) => {
+  const overlap = makeMatroska({
+    headerPadding: Buffer.from([0x42])
+  })
+  const decoy = makeMatroska({
+    headerPadding: Buffer.from([0x42, 0x82, 0x81, 0x78])
+  })
+
+  t.is(getFileFormat(overlap), 'mkv', 'overlapping DocType ID')
+  t.is(getFileFormat(decoy), 'mkv', 'DocType ID inside another element')
+})
+
 test('svg without xml declaration', (t) => {
   const buffer = require('./fixtures/plain.svg', {
     with: { type: 'binary' }
