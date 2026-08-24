@@ -4,6 +4,7 @@ const fs = require('bare-fs')
 const getFileFormat = require('..')
 const { makeMP4 } = require('./helpers/isobmff')
 const { makeMatroska, makeWebM } = require('./helpers/matroska')
+const { tmpPath } = require('./helpers/util')
 
 test('all formats', (t) => {
   const formats = [
@@ -86,9 +87,7 @@ test('svg larger than head buffer', (t) => {
 })
 
 test('fromPath: optionally inspects ISOBMFF tracks', async (t) => {
-  const filepath = `/tmp/get-file-format-${Date.now()}-${Math.random()
-    .toString(16)
-    .slice(2)}.mp4`
+  const filepath = tmpPath('mp4')
   const buffer = makeMP4({ tracks: ['soun'], mdatSize: 1024 * 1024 })
 
   fs.writeFileSync(filepath, buffer)
@@ -135,9 +134,7 @@ test('fromPath: optionally inspects Matroska tracks', async (t) => {
   ]
 
   for (const { make, tracks, baseFormat, expected } of cases) {
-    const filepath = `/tmp/get-file-format-${Date.now()}-${Math.random()
-      .toString(16)
-      .slice(2)}.${expected}`
+    const filepath = tmpPath(expected)
     const buffer = make({
       tracks,
       paddingSize: 1024 * 1024

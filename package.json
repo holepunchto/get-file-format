@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/holepunchto/get-file-format#readme",
   "devDependencies": {
+    "bare-os": "^3.6.2",
     "brittle": "^3.18.3",
     "lunte": "^1.3.0",
     "prettier": "^3.6.2",
