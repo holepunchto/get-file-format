@@ -7,21 +7,31 @@ const { makeMatroska, makeWebM } = require('./helpers/matroska')
 const { tmpPath } = require('./helpers/util')
 
 test('fromPath: optionally inspects ISOBMFF tracks', async (t) => {
-  const filepath = tmpPath('mp4')
-  const buffer = makeMP4({ tracks: ['soun'], mdatSize: 1024 * 1024 })
+  const cases = [
+    { name: 'audio-only', tracks: ['soun'], expected: 'm4a' },
+    { name: 'video-only', tracks: ['vide'], expected: 'mp4' },
+    { name: 'mixed', tracks: ['soun', 'vide'], expected: 'mp4' },
+    { name: 'no tracks', tracks: [], expected: 'mp4' },
+    { name: 'unknown handler', tracks: ['meta'], expected: 'mp4' }
+  ]
 
-  fs.writeFileSync(filepath, buffer)
+  for (const { name, tracks, expected } of cases) {
+    const filepath = tmpPath(expected)
+    const buffer = makeMP4({ tracks, mdatSize: 1024 * 1024 })
 
-  try {
-    const format = await getFileFormat.fromPath(filepath)
-    const inspectedFormat = await getFileFormat.fromPath(filepath, {
-      inspect: true
-    })
+    fs.writeFileSync(filepath, buffer)
 
-    t.is(format, 'mp4')
-    t.is(inspectedFormat, 'm4a')
-  } finally {
-    fs.unlinkSync(filepath)
+    try {
+      const format = await getFileFormat.fromPath(filepath)
+      const inspectedFormat = await getFileFormat.fromPath(filepath, {
+        inspect: true
+      })
+
+      t.is(format, 'mp4', `${name}: default`)
+      t.is(inspectedFormat, expected, `${name}: inspected`)
+    } finally {
+      fs.unlinkSync(filepath)
+    }
   }
 })
 
