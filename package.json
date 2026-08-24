@@ -14,7 +14,7 @@
   "scripts": {
     "format": "prettier --write . && lunte --fix",
     "lint": "prettier --check . && lunte",
-    "test": "brittle-bare test/index.test.js"
+    "test": "brittle-bare test.js"
   },
   "keywords": [],
   "author": "Holepunch",
