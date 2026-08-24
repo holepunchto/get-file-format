@@ -1,1 +1,2 @@
-require('./test/all')
+require('./test/basic')
+require('./test/inspect')
