@@ -29,7 +29,7 @@ const format = await getFileFormat.fromPath('./sample.mp4')
 // mp4
 ```
 
-Inspect beyond the header for media to distinguish audio-only files:
+Inspect beyond the header to distinguish audio-only MP4 (`m4a`) or Matroska (`mka`) files:
 
 ```js
 const format = await getFileFormat.fromPath('./sample.mp4', {

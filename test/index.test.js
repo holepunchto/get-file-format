@@ -2,7 +2,7 @@ const test = require('brittle')
 const fs = require('bare-fs')
 
 const getFileFormat = require('..')
-const { makeMP4 } = require('./helpers')
+const { makeMP4, makeMKV } = require('./helpers')
 
 test('all formats', (t) => {
   const formats = [
@@ -84,7 +84,7 @@ test('svg larger than head buffer', (t) => {
   t.is(result, 'svg', 'svg with closing tag past 4KB head window')
 })
 
-test('fromPath: optionally inspects tracks', async (t) => {
+test('fromPath: optionally inspects ISOBMFF tracks', async (t) => {
   const filepath = `/tmp/get-file-format-${Date.now()}-${Math.random()
     .toString(16)
     .slice(2)}.mp4`
@@ -102,6 +102,40 @@ test('fromPath: optionally inspects tracks', async (t) => {
     t.is(inspectedFormat, 'm4a')
   } finally {
     fs.unlinkSync(filepath)
+  }
+})
+
+test('fromPath: optionally inspects Matroska tracks', async (t) => {
+  const cases = [
+    { tracks: ['audio'], docType: 'matroska', expected: 'mka' },
+    { tracks: ['video'], docType: 'matroska', expected: 'mkv' },
+    { tracks: ['audio', 'video'], docType: 'matroska', expected: 'mkv' },
+    { tracks: ['audio'], docType: 'webm', expected: 'webm' }
+  ]
+
+  for (const { tracks, docType, expected } of cases) {
+    const filepath = `/tmp/get-file-format-${Date.now()}-${Math.random()
+      .toString(16)
+      .slice(2)}.${expected}`
+    const buffer = makeMKV({
+      tracks,
+      docType,
+      paddingSize: 1024 * 1024
+    })
+
+    fs.writeFileSync(filepath, buffer)
+
+    try {
+      const format = await getFileFormat.fromPath(filepath)
+      const inspectedFormat = await getFileFormat.fromPath(filepath, {
+        inspectTracks: true
+      })
+
+      t.is(format, docType === 'webm' ? 'webm' : 'mkv')
+      t.is(inspectedFormat, expected)
+    } finally {
+      fs.unlinkSync(filepath)
+    }
   }
 })
 

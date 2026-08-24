@@ -71,7 +71,7 @@ async function fromRandomAccessReader(reader, opts = {}) {
   }
 
   if (format === 'matroska') {
-    return matroska.detect(buffer)
+    return matroska.detectAt(buffer, reader, size, opts)
   }
 
   if (format === 'riff') {
