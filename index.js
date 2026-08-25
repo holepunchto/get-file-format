@@ -20,10 +20,7 @@ const signature = {
   pdf: [{ sequence: [0x25, 0x50, 0x44, 0x46, 0x2d] }],
   png: [{ sequence: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a] }],
   svg: [{ sequence: [0x3c, 0x73, 0x76, 0x67] }],
-  tiff: [
-    { sequence: [0x4d, 0x4d, 0x00, 0x2a] },
-    { sequence: [0x49, 0x49, 0x2a, 0x00] }
-  ],
+  tiff: [{ sequence: [0x4d, 0x4d, 0x00, 0x2a] }, { sequence: [0x49, 0x49, 0x2a, 0x00] }],
   xml: [
     { sequence: [0x3c, 0x3f, 0x78, 0x6d, 0x6c] },
     { sequence: [0xef, 0xbb, 0xbf, 0x3c, 0x3f, 0x78, 0x6d, 0x6c] },
@@ -88,10 +85,10 @@ async function fromRandomAccessReader(reader, opts = {}) {
 function fromFileDescriptor(fd, opts = {}) {
   return fromRandomAccessReader(
     {
-      async size() {
+      size() {
         return fs.fstatSync(fd).size
       },
-      async read(offset, length) {
+      read(offset, length) {
         const buffer = Buffer.allocUnsafe(length)
         const bytesRead = fs.readSync(fd, buffer, 0, length, offset)
         return buffer.subarray(0, bytesRead)

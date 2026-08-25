@@ -1,6 +1,5 @@
 function box(type, ...contents) {
-  const size =
-    8 + contents.reduce((total, content) => total + content.length, 0)
+  const size = 8 + contents.reduce((total, content) => total + content.length, 0)
   const header = Buffer.alloc(8)
   header.writeUInt32BE(size)
   header.write(type, 4, 4, 'latin1')
@@ -20,21 +19,14 @@ function ftyp(...brands) {
 }
 
 function handler(type) {
-  return box(
-    'hdlr',
-    Buffer.concat([Buffer.alloc(8), Buffer.from(type, 'latin1')])
-  )
+  return box('hdlr', Buffer.concat([Buffer.alloc(8), Buffer.from(type, 'latin1')]))
 }
 
 function track(type) {
   return box('trak', box('mdia', handler(type)))
 }
 
-function makeMP4({
-  tracks = [],
-  mdatSize = 0,
-  brands = ['isom', 'mp41']
-} = {}) {
+function makeMP4({ tracks = [], mdatSize = 0, brands = ['isom', 'mp41'] } = {}) {
   const boxes = [ftyp(...brands)]
   if (mdatSize > 0) boxes.push(box('mdat', Buffer.alloc(mdatSize)))
   boxes.push(box('moov', ...tracks.map(track)))
