@@ -38,7 +38,7 @@ const format = await getFileFormat.fromPath('./sample.mp4', {
 // mp4 or m4a
 ```
 
-> Inspection currently supports: MP4, Matroska.
+> Inspection currently supports: MP4 → M4A, MKV → MKA.
 
 It can be used in combination with [get-mime-type](https://github.com/holepunchto/get-mime-type):
 
