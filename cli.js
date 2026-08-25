@@ -110,9 +110,13 @@ async function main({ args, flags }) {
     const length = Number(flags.length || PRINT_BYTE_LENGTH_DEFAULT)
     const bytes = flags.verbose || !inspect ? readHead(filepath) : null
 
-    const format = inspect
-      ? await getFileFormat.fromPath(filepath, { inspect: true })
-      : getFileFormat(bytes)
+    let format
+    if (inspect) {
+      const result = await getFileFormat.fromPath(filepath, { inspect: true })
+      format = result.format
+    } else {
+      format = getFileFormat(bytes)
+    }
 
     if (flags.verbose) {
       printBytes(bytes, { start, length })

@@ -25,17 +25,19 @@ const format = getFileFormat(buffer)
 From a path:
 
 ```js
-const format = await getFileFormat.fromPath('./sample.mp4')
-// mp4
+const result = await getFileFormat.fromPath('./sample.mp4')
+// { format: 'mp4', ... }
 ```
 
 Inspect beyond the header to return a more specific format:
 
 ```js
-const format = await getFileFormat.fromPath('./sample.mp4', {
+const result = await getFileFormat.fromPath('./sample.mp4', {
   inspect: true
 })
-// mp4 or m4a
+// { format: 'mp4', ... }
+// or
+// { format: 'm4a', ... }
 ```
 
 > Inspection currently supports: MP4 → M4A, MKV → MKA.

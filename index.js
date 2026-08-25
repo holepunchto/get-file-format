@@ -75,14 +75,14 @@ async function fromRandomAccessReader(reader, opts = {}) {
   }
 
   if (format === 'riff') {
-    return riff.detect(buffer)
+    return { format: riff.detect(buffer) }
   }
 
   if (format === 'xml' || format === 'svg') {
-    return xml.detect(format, buffer)
+    return { format: xml.detect(format, buffer) }
   }
 
-  return format || null
+  return { format: format || null }
 }
 
 function fromFileDescriptor(fd, opts = {}) {

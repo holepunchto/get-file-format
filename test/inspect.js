@@ -6,6 +6,14 @@ const { makeMP4 } = require('./helpers/isobmff')
 const { makeMatroska, makeWebM } = require('./helpers/matroska')
 const { tmpPath } = require('./helpers/util')
 
+test('fromPath: returns a result', async (t) => {
+  const filepath = './test/fixtures/sample.png'
+
+  const { format } = await getFileFormat.fromPath(filepath)
+
+  t.is(format, 'png')
+})
+
 test('fromPath: optionally inspects ISOBMFF tracks', async (t) => {
   const cases = [
     { name: 'audio-only', tracks: ['soun'], expected: 'm4a' },
@@ -22,13 +30,33 @@ test('fromPath: optionally inspects ISOBMFF tracks', async (t) => {
     fs.writeFileSync(filepath, buffer)
 
     try {
-      const format = await getFileFormat.fromPath(filepath)
-      const inspectedFormat = await getFileFormat.fromPath(filepath, {
+      const result = await getFileFormat.fromPath(filepath)
+      const inspected = await getFileFormat.fromPath(filepath, {
         inspect: true
       })
 
-      t.is(format, 'mp4', `${name}: default`)
-      t.is(inspectedFormat, expected, `${name}: inspected`)
+      t.alike(
+        result,
+        {
+          format: 'mp4',
+          majorBrand: 'isom',
+          compatibleBrands: ['isom', 'mp41']
+        },
+        `${name}: default`
+      )
+      t.alike(
+        inspected,
+        {
+          format: expected,
+          majorBrand: 'isom',
+          compatibleBrands: ['isom', 'mp41'],
+          tracks: {
+            audio: tracks.includes('soun'),
+            video: tracks.includes('vide')
+          }
+        },
+        `${name}: inspected`
+      )
     } finally {
       fs.unlinkSync(filepath)
     }
@@ -73,13 +101,23 @@ test('fromPath: optionally inspects Matroska tracks', async (t) => {
     fs.writeFileSync(filepath, buffer)
 
     try {
-      const format = await getFileFormat.fromPath(filepath)
-      const inspectedFormat = await getFileFormat.fromPath(filepath, {
+      const result = await getFileFormat.fromPath(filepath)
+      const inspected = await getFileFormat.fromPath(filepath, {
         inspect: true
       })
 
-      t.is(format, baseFormat)
-      t.is(inspectedFormat, expected)
+      t.alike(result, {
+        format: baseFormat,
+        docType: baseFormat === 'webm' ? 'webm' : 'matroska'
+      })
+      t.alike(inspected, {
+        format: expected,
+        docType: baseFormat === 'webm' ? 'webm' : 'matroska',
+        tracks: {
+          audio: tracks.includes('audio'),
+          video: tracks.includes('video')
+        }
+      })
     } finally {
       fs.unlinkSync(filepath)
     }
