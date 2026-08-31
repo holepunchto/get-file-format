@@ -39,7 +39,7 @@ test('fromPath: all formats', async (t) => {
   }
 })
 
-test.solo('fromPath: with inspection', async (t) => {
+test('fromPath: with inspection', async (t) => {
   const formats = ['3g2', '3gp', 'f4v', 'm4v', 'mkv', 'mov', 'mp4', 'webm']
 
   for (const format of formats) {
