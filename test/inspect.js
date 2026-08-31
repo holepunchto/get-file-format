@@ -84,8 +84,20 @@ test('fromPath: optionally inspects Matroska tracks', async (t) => {
       expected: 'mkv'
     },
     {
+      make: makeMatroska,
+      tracks: [],
+      baseFormat: 'mkv',
+      expected: 'mkv'
+    },
+    {
       make: makeWebM,
       tracks: ['audio'],
+      baseFormat: 'webm',
+      expected: 'webm'
+    },
+    {
+      make: makeWebM,
+      tracks: ['video'],
       baseFormat: 'webm',
       expected: 'webm'
     }
