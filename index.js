@@ -85,12 +85,12 @@ async function fromRandomAccessReader(reader, opts = {}) {
 function fromFileDescriptor(fd, opts = {}) {
   return fromRandomAccessReader(
     {
-      size() {
-        return fs.fstatSync(fd).size
+      async size() {
+        return (await fs.fstat(fd)).size
       },
-      read(offset, length) {
+      async read(offset, length) {
         const buffer = Buffer.allocUnsafe(length)
-        const bytesRead = fs.readSync(fd, buffer, 0, length, offset)
+        const bytesRead = await fs.read(fd, buffer, 0, length, offset)
         return buffer.subarray(0, bytesRead)
       }
     },
@@ -99,12 +99,12 @@ function fromFileDescriptor(fd, opts = {}) {
 }
 
 async function fromPath(filepath, opts = {}) {
-  const fd = fs.openSync(filepath, 'r')
+  const fd = await fs.open(filepath, 'r')
 
   try {
     return await fromFileDescriptor(fd, opts)
   } finally {
-    fs.closeSync(fd)
+    await fs.close(fd)
   }
 }
 
