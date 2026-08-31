@@ -6,12 +6,52 @@ const { makeMP4 } = require('./helpers/isobmff')
 const { makeMatroska, makeWebM } = require('./helpers/matroska')
 const { tmpPath } = require('./helpers/util')
 
-test('fromPath: returns a result', async (t) => {
-  const filepath = './test/fixtures/sample.png'
+test('fromPath: all formats', async (t) => {
+  const formats = [
+    '3g2',
+    '3gp',
+    'avi',
+    'avif',
+    'bmp',
+    'f4v',
+    'gif',
+    'heic',
+    'ico',
+    'jpg',
+    'm4v',
+    'mkv',
+    'mov',
+    'mp4',
+    'pdf',
+    'png',
+    'svg',
+    'tiff',
+    'wav',
+    'webm',
+    'webp',
+    'xml'
+  ]
 
-  const { format } = await getFileFormat.fromPath(filepath)
+  for (const format of formats) {
+    const result = await getFileFormat.fromPath(`./test/fixtures/sample.${format}`)
 
-  t.is(format, 'png')
+    t.is(result.format, format, format)
+  }
+})
+
+
+test.solo('fromPath: with inspection', async (t) => {
+  const formats = ['3g2', '3gp', 'f4v', 'm4v', 'mkv', 'mov', 'mp4', 'webm']
+
+  for (const format of formats) {
+    const result = await getFileFormat.fromPath(`./test/fixtures/sample.${format}`, {
+      inspect: true
+    })
+
+    t.is(result.format, format, `${format}: format`)
+    t.is(typeof result.tracks.audio, 'boolean', `${format}: tracks.audio`)
+    t.is(typeof result.tracks.video, 'boolean', `${format}: tracks.video`)
+  }
 })
 
 test('fromPath: optionally inspects ISOBMFF tracks', async (t) => {
