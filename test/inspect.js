@@ -196,12 +196,15 @@ test('fromPath: optionally inspects XML - stops at the byte limit', async (t) =>
   fs.writeFileSync(filepath, buffer)
 
   try {
-    const result = await getFileFormat.fromPath(filepath, {
+    const format = getFileFormat(buffer)
+    const result = await getFileFormat.fromPath(filepath)
+    const inspected = await getFileFormat.fromPath(filepath, {
       inspect: true
     })
 
-    t.is(getFileFormat(buffer), 'svg', 'whole buffer')
-    t.is(result.format, 'xml', 'inspection limit')
+    t.is(format, 'xml', 'from buffer')
+    t.is(result.format, 'xml', 'from path')
+    t.is(inspected.format, 'xml', 'inspection limit')
   } finally {
     fs.unlinkSync(filepath)
   }

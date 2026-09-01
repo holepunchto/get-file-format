@@ -24,15 +24,13 @@ test('svg without xml declaration', (t) => {
   t.is(result, 'svg', 'svg without xml declaration')
 })
 
-test('svg larger than head buffer', (t) => {
-  const header = Buffer.from(
-    '<?xml version="1.0"?>\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">\n<rect width="100" height="100"/>\n'
-  )
+test('svg tag past the head buffer', (t) => {
+  const header = Buffer.from('<?xml version="1.0"?>\n')
   const padding = Buffer.alloc(8192, 0x20)
-  const closing = Buffer.from('</svg>')
-  const buffer = Buffer.concat([header, padding, closing])
+  const tag = Buffer.from('<svg></svg>')
+  const buffer = Buffer.concat([header, padding, tag])
   const result = getFileFormat(buffer)
-  t.is(result, 'svg', 'svg with closing tag past 4KB head window')
+  t.is(result, 'xml', 'svg tag past 4KB head window needs inspection')
 })
 
 test('accepts Uint8Array', (t) => {

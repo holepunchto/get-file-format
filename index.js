@@ -34,8 +34,7 @@ function head(buffer, end = HEAD_SIZE) {
 }
 
 function getFileFormat(bytes) {
-  const fullBuffer = toBuffer(bytes)
-  const buffer = head(fullBuffer)
+  const buffer = head(bytes)
 
   const format = lookup(signature, buffer)
 
@@ -52,7 +51,7 @@ function getFileFormat(bytes) {
   }
 
   if (format === 'xml' || format === 'svg') {
-    return xml.detect(format, fullBuffer)
+    return xml.detect(format, buffer)
   }
 
   return format || null
