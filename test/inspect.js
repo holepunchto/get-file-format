@@ -174,3 +174,35 @@ test('fromPath: optionally inspects Matroska tracks', async (t) => {
     }
   }
 })
+
+test('fromPath: optionally inspects XML', async (t) => {
+  const filepath = './test/fixtures/long-comment.svg'
+  const result = await getFileFormat.fromPath(filepath)
+  const inspected = await getFileFormat.fromPath(filepath, {
+    inspect: true
+  })
+
+  t.is(result.format, 'xml', 'default')
+  t.is(inspected.format, 'svg', 'inspected')
+})
+
+test('fromPath: optionally inspects XML - stops at the byte limit', async (t) => {
+  const filepath = tmpPath('svg')
+  const limit = 5 * 1024 * 1024
+  const buffer = Buffer.alloc(limit + 11, 0x20)
+  buffer.write('<?xml version="1.0"?>')
+  buffer.write('<svg></svg>', limit)
+
+  fs.writeFileSync(filepath, buffer)
+
+  try {
+    const result = await getFileFormat.fromPath(filepath, {
+      inspect: true
+    })
+
+    t.is(getFileFormat(buffer), 'svg', 'whole buffer')
+    t.is(result.format, 'xml', 'inspection limit')
+  } finally {
+    fs.unlinkSync(filepath)
+  }
+})

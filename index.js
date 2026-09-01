@@ -76,7 +76,7 @@ async function fromRandomAccessReader(reader, opts = {}) {
   }
 
   if (format === 'xml' || format === 'svg') {
-    return { format: xml.detect(format, buffer) }
+    return xml.detectAt(format, buffer, reader, size, opts)
   }
 
   return { format: format || null }
