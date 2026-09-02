@@ -33,13 +33,19 @@ test('svg tag past the head buffer', (t) => {
   t.is(result, 'xml', 'svg tag past 4KB head window needs inspection')
 })
 
-test('accepts Uint8Array', (t) => {
+test('supports binary types', (t) => {
   const bytes = new Uint8Array(makeMP4())
   const padded = new Uint8Array(bytes.length + 8)
   padded.set(bytes, 8)
 
-  t.is(getFileFormat(bytes), 'mp4', 'direct input')
+  t.is(getFileFormat(bytes), 'mp4', 'Uint8Array')
   t.is(getFileFormat(padded.subarray(8)), 'mp4', 'non-zero byte offset')
+  t.is(getFileFormat(bytes.buffer), 'mp4', 'ArrayBuffer')
+  t.exception.all(
+    () => getFileFormat('not a buffer'),
+    /Expected a Buffer, typed array, or ArrayBuffer/,
+    'unsupported input'
+  )
 })
 
 test('malformed ftyp size does not scan unrelated bytes', (t) => {
