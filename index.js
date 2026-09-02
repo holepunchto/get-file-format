@@ -50,8 +50,8 @@ function getFileFormat(bytes) {
     return riff.detect(buffer)
   }
 
-  if (format === 'xml' || format === 'svg') {
-    return xml.detect(format, buffer)
+  if (format === 'xml') {
+    return xml.detect(buffer)
   }
 
   return format || null
@@ -74,8 +74,8 @@ async function fromRandomAccessReader(reader, opts = {}) {
     return { format: riff.detect(buffer) }
   }
 
-  if (format === 'xml' || format === 'svg') {
-    return xml.detectAt(format, buffer, reader, size, opts)
+  if (format === 'xml') {
+    return xml.detectAt(buffer, reader, size, opts)
   }
 
   return { format: format || null }
