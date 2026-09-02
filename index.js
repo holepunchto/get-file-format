@@ -89,7 +89,15 @@ function fromFileDescriptor(fd, opts = {}) {
       },
       async read(offset, length) {
         const buffer = Buffer.allocUnsafe(length)
-        const bytesRead = await fs.read(fd, buffer, 0, length, offset)
+
+        let bytesRead = 0
+
+        while (bytesRead < length) {
+          const read = await fs.read(fd, buffer, bytesRead, length - bytesRead, offset + bytesRead)
+          if (read === 0) break
+          bytesRead += read
+        }
+
         return buffer.subarray(0, bytesRead)
       }
     },
