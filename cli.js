@@ -1,8 +1,10 @@
 #!/usr/bin/env bare
 const { header, summary, command, arg, flag } = require('paparam')
+const fs = require('bare-fs')
 const path = require('bare-path')
 const getFileFormat = require('.')
 
+const HEAD_SIZE = 4096
 const PRINT_BYTE_START_DEFAULT = 0
 const PRINT_BYTE_LENGTH_DEFAULT = 32
 
@@ -11,6 +13,7 @@ const cmd = command(
   summary('Detect the format of a file by looking at its magic number 🪄'),
   arg('<path>', 'Path to the file'),
   flag('--verbose|-v', 'Print bytes and other info'),
+  flag('--inspect|-i', 'Inspect beyond the header for a more specific format'),
   flag(
     '--start|-s [byteStart]',
     `Start index of bytes to print in verbose mode. Default ${PRINT_BYTE_START_DEFAULT}`
@@ -72,6 +75,11 @@ function printFTYP(bytes) {
   log('Major brand:', majorBrand)
   log('Minor version:', minorVersion)
 
+  if (size < 16 || size > bytes.length || (size - 16) % 4 !== 0) {
+    log('Compatibles: unavailable')
+    return
+  }
+
   const compatibles = []
   for (let i = 16; i < size; i += 4) {
     compatibles.push(bytes.subarray(i, i + 4).toString('latin1'))
@@ -80,15 +88,35 @@ function printFTYP(bytes) {
   log('Compatibles:', compatibles.join(', '))
 }
 
+function readHead(filepath) {
+  const fd = fs.openSync(filepath, 'r')
+
+  try {
+    const buffer = Buffer.allocUnsafe(HEAD_SIZE)
+    const bytesRead = fs.readSync(fd, buffer, 0, HEAD_SIZE, 0)
+    return buffer.subarray(0, bytesRead)
+  } finally {
+    fs.closeSync(fd)
+  }
+}
+
 async function main({ args, flags }) {
   try {
     if (!args?.path) return
 
-    const bytes = require(path.resolve(args.path), { with: { type: 'binary' } })
+    const filepath = path.resolve(args.path)
+    const inspect = flags.inspect
     const start = Number(flags.start || PRINT_BYTE_START_DEFAULT)
     const length = Number(flags.length || PRINT_BYTE_LENGTH_DEFAULT)
+    const bytes = flags.verbose || !inspect ? readHead(filepath) : null
 
-    const format = getFileFormat(bytes)
+    let format
+    if (inspect) {
+      const result = await getFileFormat.fromPath(filepath, { inspect: true })
+      format = result.format
+    } else {
+      format = getFileFormat(bytes)
+    }
 
     if (flags.verbose) {
       printBytes(bytes, { start, length })

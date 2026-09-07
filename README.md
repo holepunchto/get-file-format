@@ -22,6 +22,28 @@ const format = getFileFormat(buffer)
 // png
 ```
 
+From a path:
+
+```js
+const result = await getFileFormat.fromPath('./sample.mp4')
+// { format: 'mp4', ... }
+```
+
+Inspect beyond the header to return a more specific format:
+
+```js
+const result = await getFileFormat.fromPath('./sample.mp4', {
+  inspect: true
+})
+// { format: 'mp4', ... }
+// or
+// { format: 'm4a', ... }
+```
+
+> Without `inspect`, detection only looks at the first 4 KB of the file. Signatures beyond that window return a less specific format.
+>
+> Currently supported: MP4 → M4A, MKV → MKA, XML → SVG.
+
 It can be used in combination with [get-mime-type](https://github.com/holepunchto/get-mime-type):
 
 ```js
@@ -49,6 +71,7 @@ Options:
 ```sh
   <path>                      Path to the file to inspect
   --verbose, -v               Print bytes and other info
+  --inspect, -i               Inspect beyond the header for a more specific format
   --start, -s <byteStart>     Start index of bytes to print in verbose mode
   --length, -n <byteLength>   Number of bytes to print in verbose mode
   --help                      Print help
