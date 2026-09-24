@@ -177,8 +177,7 @@ function isobmff(buffer) {
     return format
   }
 
-  // check compatibles
-  const compatibleCount = Math.max(0, (size - 16) / 4)
+  const compatibleCount = Math.max(0, (Math.min(size, buffer.length) - 16) / 4)
   for (let i = 0; i < compatibleCount; i++) {
     const index = 16 + i * 4
     const compatible = buffer.subarray(index, index + 4)
