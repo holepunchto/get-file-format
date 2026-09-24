@@ -80,7 +80,7 @@ function printFTYP(bytes) {
   log('Compatibles:', compatibles.join(', '))
 }
 
-async function main({ args, flags }) {
+function main({ args, flags }) {
   try {
     if (!args?.path) return
 
