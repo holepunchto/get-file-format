@@ -18,6 +18,10 @@
   "keywords": [],
   "author": "Holepunch",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holepunchto/get-file-format.git"
+  },
   "bugs": {
     "url": "https://github.com/holepunchto/get-file-format/issues"
   },
