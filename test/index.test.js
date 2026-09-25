@@ -63,6 +63,21 @@ test('undetected format returns null', (t) => {
   t.is(result, null)
 })
 
+test('ftyp box with a wrong size resolves quickly', (t) => {
+  const buffer = Buffer.alloc(16)
+  buffer.writeUInt32BE(0xffffffff, 0)
+  buffer.write('ftyp', 4, 'latin1')
+  buffer.write('xxxx', 8, 'latin1')
+  buffer.write('xxxx', 12, 'latin1')
+
+  const start = Date.now()
+  const result = getFileFormat(buffer)
+  const elapsed = Date.now() - start
+
+  t.is(result, null, 'unrecognized brand with wrong size')
+  t.ok(elapsed < 1000, `resolves quickly (${elapsed}ms)`)
+})
+
 test('svg without xml declaration', (t) => {
   const buffer = require('./fixtures/plain.svg', {
     with: { type: 'binary' }
